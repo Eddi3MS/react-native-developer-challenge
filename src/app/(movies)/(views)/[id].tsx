@@ -50,11 +50,13 @@ const MovieDetails = () => {
           style={styles.image}
           resizeMode="cover"
         />
+
         <View style={styles.badgeContainer}>
           {genres.map((genre) => (
             <Badge text={genre} key={genre} />
           ))}
         </View>
+
         <MovieDetailsText text={data.Title} label="Titulo" />
         <MovieDetailsText text={data.Director} label="Diretor" />
         <MovieDetailsText text={data.Writer} label="Escritores" />
@@ -83,9 +85,11 @@ const styles = StyleSheet.create({
   },
   badgeContainer: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'center',
     gap: 10,
     marginBottom: 20,
+    paddingHorizontal: 10,
   },
   loading: {
     fontSize: 18,
