@@ -3,14 +3,18 @@ import { MovieDTO, MoviesListDTO, SingleMovieDTO } from './dtos/moviesDTOs'
 
 const basePath = 'https://www.omdbapi.com/?apikey=2a791b48'
 
-export function useMoviesList(search: string) {
+export function useMoviesList(search: string = 'star wars') {
   const getMovies = async ({ pageParam = 1 }) => {
     const res: MoviesListDTO = await (
       await fetch(`${basePath}&page=${pageParam}&s=${search}&type=movie`)
     ).json()
 
     if ('Error' in res) {
-      throw new Error('Erro ao listar filmes.')
+      throw new Error(
+        res.Error === 'Movie not found!'
+          ? 'Filme não encontrado. Ajuste sua busca.'
+          : 'Erro ao listar filmes, tente novamente.'
+      )
     }
 
     return {

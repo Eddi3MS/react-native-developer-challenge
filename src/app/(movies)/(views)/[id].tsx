@@ -1,65 +1,70 @@
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native'
-import React from 'react'
-import { Stack, useLocalSearchParams } from 'expo-router'
-import { useSingleMovie } from '@/queries/movies'
+import Badge from '@/components/Badge'
+import Feedback from '@/components/Feedback'
+import MovieDetailsText from '@/components/MovieDetailsText'
 import Colors from '@/constants/Colors'
+import { useSingleMovie } from '@/queries/movies'
+import { hasImage } from '@/utils/hasImage'
+import { Stack, useLocalSearchParams } from 'expo-router'
+import React from 'react'
+import { Image, ScrollView, StyleSheet, View } from 'react-native'
 
 const MovieDetails = () => {
   const { id } = useLocalSearchParams<{ id: string }>()
   const { data, isLoading, error } = useSingleMovie(id)
 
   if (isLoading) {
-    return <Text style={styles.loading}>Carregando..</Text>
+    return (
+      <>
+        <Feedback text="Carregando.." />
+        <Stack.Screen options={{ title: 'Carregando..' }} />
+      </>
+    )
   }
 
   if (error) {
-    return <Text>{error.message}</Text>
+    return (
+      <>
+        <Feedback text={error.message} type="error" />
+        <Stack.Screen options={{ title: 'Erro' }} />
+      </>
+    )
   }
 
   if (!data) {
-    return <Text>Filme não encontrado.</Text>
+    return (
+      <>
+        <Feedback text="Filme não encontrado." type="error" />
+        <Stack.Screen options={{ title: 'Erro' }} />
+      </>
+    )
   }
+
+  const genres = data.Genre.trim().split(',')
 
   return (
     <ScrollView style={styles.container}>
-      <Stack.Screen options={{ title: data.Title }} />
-      <Image
-        source={{ uri: data.Poster }}
-        style={styles.image}
-        resizeMode="cover"
-      />
-      <Text style={styles.text}>
-        <Text style={styles.innerText}>Titulo : </Text>
-        {data.Title}
-      </Text>
-      <Text style={styles.text}>
-        <Text style={styles.innerText}>Diretor : </Text>
-        {data.Director}
-      </Text>
-      <Text style={styles.text}>
-        <Text style={styles.innerText}>Escritores : </Text>
-        {data.Writer}
-      </Text>
-      <Text style={styles.text}>
-        <Text style={styles.innerText}>Duração : </Text>
-        {data.Runtime}
-      </Text>
-      <Text style={styles.text}>
-        <Text style={styles.innerText}>Atores : </Text>
-        {data.Actors}
-      </Text>
-      <Text style={styles.text}>
-        <Text style={styles.innerText}>Lançamento : </Text>
-        {data.Released}
-      </Text>
-      <Text style={styles.text}>
-        <Text style={styles.innerText}>Faturamento : </Text>
-        {data.BoxOffice}
-      </Text>
-      <Text style={styles.text}>
-        <Text style={styles.innerText}>Sinopse : </Text>
-        {data.Plot}
-      </Text>
+      <View style={styles.innerContainer}>
+        <Stack.Screen options={{ title: data.Title }} />
+        <Image
+          source={{ uri: hasImage(data.Poster) }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+        <View style={styles.badgeContainer}>
+          {genres.map((genre) => (
+            <Badge text={genre} key={genre} />
+          ))}
+        </View>
+        <MovieDetailsText text={data.Title} label="Titulo" />
+        <MovieDetailsText text={data.Director} label="Diretor" />
+        <MovieDetailsText text={data.Writer} label="Escritores" />
+        <MovieDetailsText text={data.Runtime} label="Duração" />
+        <MovieDetailsText text={data.Actors} label="Atores Principais" />
+        <MovieDetailsText text={data.Released} label="Data de Lançamento" />
+        <MovieDetailsText text={data.BoxOffice} label="Faturamento" />
+        <MovieDetailsText text={data.Awards} label="Premiações" />
+        <MovieDetailsText text={data.Plot} label="Sinopse" />
+      </View>
     </ScrollView>
   )
 }
@@ -70,7 +75,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
+  },
+  innerContainer: {
+    flex: 1,
+    width: '100%',
     padding: 20,
+  },
+  badgeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 10,
+    marginBottom: 20,
   },
   loading: {
     fontSize: 18,
@@ -83,16 +98,5 @@ const styles = StyleSheet.create({
     aspectRatio: 11 / 17,
     alignSelf: 'center',
     marginBottom: 15,
-  },
-  text: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.light.text,
-    textAlign: 'left',
-  },
-  innerText: {
-    fontSize: 18,
-    color: Colors.light.tint,
-    fontWeight: '600',
   },
 })

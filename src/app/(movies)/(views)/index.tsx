@@ -1,9 +1,12 @@
-import MovieCard from '@/components/MovieCard'
+import Feedback from '@/components/Feedback'
+import { MemoizedMovieCard } from '@/components/MovieCard'
 import Colors from '@/constants/Colors'
 import { useMoviesList } from '@/queries/movies'
+import { useSearch } from '@/store/useSearch'
 import { FlatList, StyleSheet, Text, View } from 'react-native'
 
-export default function TabOneScreen() {
+export default function MoviesScreen() {
+  const search = useSearch((state) => state.search)
   const {
     data,
     error,
@@ -11,7 +14,7 @@ export default function TabOneScreen() {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useMoviesList('batman')
+  } = useMoviesList(search)
 
   const loadNext = () => {
     if (hasNextPage) {
@@ -20,15 +23,15 @@ export default function TabOneScreen() {
   }
 
   if (isLoading) {
-    return <Text style={styles.loading}>Carregando..</Text>
+    return <Feedback text="Carregando.." />
   }
 
   if (error) {
-    return <Text>{error.message}</Text>
+    return <Feedback text={error.message} type="error" />
   }
 
   if (!Array.isArray(data)) {
-    return <Text>Nenhum filme encontrado.</Text>
+    return <Feedback text="Nenhum filme encontrado." type="error" />
   }
 
   return (
@@ -36,8 +39,8 @@ export default function TabOneScreen() {
       <FlatList
         keyExtractor={(item) => item.imdbID}
         data={data}
-        renderItem={({ item }) => <MovieCard {...item} />}
-        //  onEndReached={loadNext}
+        renderItem={({ item }) => <MemoizedMovieCard {...item} />}
+        onEndReached={loadNext}
         numColumns={2}
         contentContainerStyle={{ gap: 10, padding: 10 }}
         columnWrapperStyle={{ gap: 10 }}

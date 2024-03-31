@@ -1,6 +1,6 @@
-import QueryProvider from '@providers/QueryProvider'
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import { useColorScheme } from '@hooks/useColorScheme'
+import QueryProvider from '@providers/QueryProvider'
 import {
   DarkTheme,
   DefaultTheme,
@@ -57,9 +57,8 @@ function RootLayoutNav() {
           <Stack.Screen
             name="modal"
             options={{
-              presentation: 'modal',
+              presentation: 'transparentModal',
               title: 'Pesquise por um filme',
-              animation: 'slide_from_bottom',
             }}
           />
         </Stack>

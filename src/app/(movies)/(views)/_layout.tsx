@@ -1,16 +1,18 @@
-import { View, Text, Pressable } from 'react-native'
-import React from 'react'
-import { Link, Stack } from 'expo-router'
 import FontAwesomeIcon from '@/components/FontAwesomeIcon'
 import Colors from '@/constants/Colors'
+import { useSearch } from '@/store/useSearch'
+import { Link, Stack } from 'expo-router'
+import React from 'react'
+import { Pressable } from 'react-native'
 
 const MoviesViews = () => {
+  const search = useSearch((state) => state.search)
   return (
-    <Stack screenOptions={{}}>
+    <Stack>
       <Stack.Screen
         name="index"
         options={{
-          title: 'Filmes',
+          title: `Filmes: ${search}`,
           headerRight: () => (
             <Link href="/modal" asChild>
               <Pressable>

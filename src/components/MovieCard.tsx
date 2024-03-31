@@ -1,7 +1,8 @@
 import Colors from '@/constants/Colors'
 import { MovieDTO } from '@/queries/dtos/moviesDTOs'
+import { hasImage } from '@/utils/hasImage'
 import { Link } from 'expo-router'
-import React from 'react'
+import React, { memo } from 'react'
 import {
   Dimensions,
   Image,
@@ -17,14 +18,23 @@ const MovieCard = ({ Poster, Title, Year, imdbID }: MovieDTO) => {
       style={[
         styles.container,
         /* container: padding 10 gap 10 => 10 + gap / 2 = 15 ) */
-        { maxWidth: Dimensions.get('window').width / 2 - 15 },
+        {
+          maxWidth:
+            Dimensions.get('window').width &&
+            Dimensions.get('window').width < 1000
+              ? Dimensions.get('window').width / 2 - 15
+              : /* ajuste pra rodar no browser */
+                '49%',
+        },
       ]}
     >
       <Link href={`/(movies)/(views)/${imdbID}`} asChild>
         <Pressable style={styles.pressable}>
           <View style={styles.imageContainer}>
             <Image
-              source={{ uri: Poster }}
+              source={{
+                uri: hasImage(Poster),
+              }}
               style={styles.image}
               resizeMode="cover"
             />
@@ -43,7 +53,7 @@ const MovieCard = ({ Poster, Title, Year, imdbID }: MovieDTO) => {
   )
 }
 
-export default MovieCard
+export const MemoizedMovieCard = memo(MovieCard)
 
 const styles = StyleSheet.create({
   container: {
